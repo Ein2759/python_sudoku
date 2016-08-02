@@ -204,7 +204,8 @@ class sudoku_dataarray:
                     self.sudokudat[i][j].status=1 # mask data 
                 else:
                     self.sudokudat[i][j].status=0 # user data
-                stt=self.sudokudat[i][j].status    
+                stt=self.sudokudat[i][j].status
+                self.sudokudat[i][j].chkno=[1,2,3,4,5,6,7,8,9]
                 pp = (i+1)*10+(j+1)
                 self.sudokudat[i][j].setpos(pp)
 

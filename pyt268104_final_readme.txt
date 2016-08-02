@@ -3,7 +3,7 @@ pyt268104 廖恆德 python期末作業 20160724
 1說明:
 	專題由三個檔案組成
 	pyt268104_sudoku.py	--主程式
-	sudoku_publib.py	--class Num and Class sudoku_dataarray 
+	sudoku_publib.py	--class [ Num ]and Class [sudoku_dataarray]
 	sudoku_tablex1.py   	--題庫(demo_1)Easy ,(demo_2)Normal,(demo_3)Hard
 	需置於同一目錄下
 
@@ -28,6 +28,12 @@ pyt268104 廖恆德 python期末作業 20160724
 [K]key in a data to Game			: 輸入 (pos,Num) 
 [C]check the Game by Pass			: 檢查遊戲狀態 (playing , Fail , Pass)
 
+4: 功能 
+ 4.1 手動功能 手動解題[k] 輸入座標訊息 , [C]檢查
+ 4.2 自動解題 對策可擴充
+     C1 消去法
+     C2 唯一預測法
+
 範例:
 ===0 is [ demo,(Easy_1) ] === ##顯示 (buffer index)  [名稱,(等級_題目序號)]
 =============== sudoku data ===============
@@ -43,3 +49,4 @@ pyt268104 廖恆德 python期末作業 20160724
 [ 0]($1)[ 0]||($2)[ 0][ 0]||[ 0]($8)($5)
 ($3)[ 0][ 0]||[ 0]($5)($1)||[ 0][ 0][ 0]
 ==========================================
+

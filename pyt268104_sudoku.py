@@ -9,18 +9,21 @@
 #   return c
 import sudoku_tablex1
 import sudoku_publib
-
+arealoop=[[1,3,1,3],[1,3,4,6],[1,3,7,9],
+          [4,6,1,3],[4,6,4,6],[4,6,7,9],
+          [7,9,1,3],[7,9,4,6],[7,9,7,9]              
+         ]
 level = 1
 gcode = 1
 pysudokuver = '''
 This is Sudoku Game
 Desiger: Handel Liao pyt268104
 Codeing by Python3.5 
-Ver : 1.1 20160724
+Ver : 1.2 20160725
 '''
 lev=["Easy","Normal","Hard"]
 mtxt = '''
-=== Easy Sudoku Game V1.1 pyt268104 Handel ===
+=== Easy Sudoku Game V1.2 pyt268104 Handel ===
 *** System Command ***
 [1]Level Select (L1:Easy,L2:Normal,L3:Hard)
 [2]Game code by LEVEL(1..10)
@@ -65,13 +68,14 @@ def setsudoku_plan(xx,tab):
     for i in range(9):
         xx[i]=tab[i]
 
-def scanok(yy):
+def scanok(yy):#c1: area ,col,raw must be 1 scan 
     for i in range(9):
         for j in range(9):
             if yy.sudokudat[i][j].status == 0:
                 yy.sudokudat[i][j].scanchk(yy.sudokudat)
             
-    runok=0    
+    runok=0
+    runfail=0
     for i in range(9):
         for j in range(9):
             ll=len(yy.sudokudat[i][j].chkno)
@@ -79,10 +83,65 @@ def scanok(yy):
             if yy.sudokudat[i][j].no==0:
                 if ll==1:                
                     yy.sudokudat[i][j].no = yy.sudokudat[i][j].chkno[0]
-                runok+=1
-                
-    return runok    
+                else:
+                    runok+=1
 
+                if ll==0:
+                    runfail+=1
+                
+    return runok,runfail    
+
+def scanok2(yy):#c2: area mabe only 1 scan
+    xall=[]
+    xpass=[]
+    for acode in range(9):
+        xall.clear()
+        xpass.clear()
+        y1,y2,x1,x2 = arealoop[acode]
+        y,x = (y1-1),(x1-1)        
+        for y in range(y1-1,y2):
+            for x in range(x1-1,x2):
+                if yy.sudokudat[y][x].no==0 and len(yy.sudokudat[y][x].chkno)>1:
+                    for i in yy.sudokudat[y][x].chkno:
+                        xall.append(i)
+                        
+        for i in xall:
+            if xall.count(i)==1:
+                xpass.append(i)
+
+        if len(xpass)>0:        
+            y,x = (y1-1),(x1-1)        
+            for y in range(y1-1,y2):
+                for x in range(x1-1,x2):
+                    if  yy.sudokudat[y][x].no==0 and len(yy.sudokudat[y][x].chkno)>1:
+                        for i in xpass:
+                            if i in yy.sudokudat[y][x].chkno:
+                                yy.sudokudat[y][x].chkno=[]
+                                yy.sudokudat[y][x].chkno.append(i)
+                                yy.sudokudat[y][x].no=i
+                            
+    for i in range(9):
+        for j in range(9):
+            if yy.sudokudat[i][j].status == 0:
+                yy.sudokudat[i][j].scanchk(yy.sudokudat)
+            
+    runok=0
+    runfail=0
+    for i in range(9):
+        for j in range(9):
+            ll=len(yy.sudokudat[i][j].chkno)
+            print("%d%d = %s # %d"%(i+1,j+1,yy.sudokudat[i][j].chkno,ll))
+            if yy.sudokudat[i][j].no==0:
+                if ll==1:                
+                    yy.sudokudat[i][j].no = yy.sudokudat[i][j].chkno[0]
+                else:
+                    runok+=1
+
+                if ll==0:
+                    runfail+=1
+                
+    return runok,runfail                             
+    pass
 
 def main():
     game=[]
@@ -158,6 +217,7 @@ def main():
                 game[playindex].setsudoku_plan(sudoku_tablex1.demo_2[gcode])
             elif level==3:
                 game[playindex].setsudoku_plan(sudoku_tablex1.demo_3[gcode])
+                
             ss1 = game[playindex].gname
             ss = ss1.split(",")[0]
             ss += ",("+lev[level-1]+"_"+str(gcode)+")"
@@ -185,23 +245,7 @@ def main():
                 else:
                     print("Err input stop keyin ...")
                     break           
-            
-        elif cmm == "c":#check game pass or fail
-            print()
-            print("===check the %d is [ %s ] ==="%(playindex,game[playindex].gname))
-            game[playindex].showsudoku()
-            game[playindex].checksudoku()
-            
-            if game[playindex].runfg>0:
-                print("Some Number must to edit  ...")
-            else:
-                if game[playindex].chkfg==0:
-                    print("************************")
-                    print("** This Game Pass ... **")
-                    print("************************")
-                else:
-                    print("This Game Fail !")    
-                    print("Try Again ...")
+
             
         elif cmm =='1':
             level = eval(input("(1:Easy,2:Normal,3:Hard)Input Level:"))
@@ -246,11 +290,32 @@ def main():
              
             print("Game index = %d is run [ %s ]"%(playindex,game[playindex].gname))
             print()
-        
-        elif cmm == 'c1':
-            scanok(game[playindex])
+                    
+        elif cmm == "c":#check game pass or fail
             print()
+            print("===check the %d is [ %s ] ==="%(playindex,game[playindex].gname))
+            game[playindex].showsudoku()
+            game[playindex].checksudoku()
             
+            if game[playindex].runfg>0:
+                print("Some Number must to edit  ...")
+            else:
+                if game[playindex].chkfg==0:
+                    print("************************")
+                    print("** This Game Pass ... **")
+                    print("************************")
+                else:
+                    print("This Game Fail !")    
+                    print("Try Again ...")
+                    
+        elif cmm == 'c1':
+            runck,runfail = scanok(game[playindex])
+            print("have %d will be edit %d is err ... "%(runck,runfail))
+
+        elif cmm == 'c2':
+            runck,runfail = scanok2(game[playindex])
+            print("have %d will be edit %d is err ... "%(runck,runfail))    
+        
         cmm = input("Play (game[%d]-> %s) help(?)Input cmm="%(playindex,game[playindex].gname))
 
     
